@@ -1,0 +1,32 @@
+global:
+  scrape_interval: 15s  # Fréquence de récupération des métriques
+  evaluation_interval: 15s  # Fréquence d'évaluation des règles
+
+scrape_configs:
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['localhost:9090']
+
+  - job_name: 'nifi'
+    static_configs:
+      - targets: ['nifi:8081']
+
+  - job_name: 'postgresql'
+    static_configs:
+      - targets: ['postgresql:5432']
+
+  - job_name: 'keycloak'
+    static_configs:
+      - targets: ['keycloak:8080']
+
+  - job_name: 'grafana'
+    static_configs:
+      - targets: ['grafana:3000']
+
+  - job_name: 'loki'
+    static_configs:
+      - targets: ['loki:3100']
+
+  - job_name: 'pgadmin'
+    static_configs:
+      - targets: ['pgadmin:5050']

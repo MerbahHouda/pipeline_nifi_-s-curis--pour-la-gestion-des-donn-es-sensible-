@@ -1,0 +1,48 @@
+auth_enabled: false
+
+server:
+  http_listen_port: 3100
+  grpc_listen_port: 9096
+
+  # Expose the Loki API for Grafana and other tools
+  http_server_timeout: 5m
+  max_concurrent_requests: 50
+  read_timeout: 1m
+  write_timeout: 1m
+
+# Define the storage backend (local filesystem in this case)
+storage_config:
+  boltdb_shipper:
+    active_index_directory: /var/lib/loki/index
+    cache_location: /var/lib/loki/cache
+    shared_store: filesystem
+  filesystem:
+    directory: /var/lib/loki/chunks
+
+# Configure the Loki pipelines (streams)
+chunk_target_size: 1048576  # 1 MB per chunk
+
+# The default maximum time window for logs
+retention_policy:
+  delete: 30d  # Delete logs older than 30 days
+
+# The limits for the ingestion pipeline
+limits_config:
+  max_streams_per_user: 1000
+  max_entries_limit_per_stream: 10000
+  ingestion_rate_mb: 10
+  ingestion_burst_size_mb: 20
+
+# Define the scrape configuration (Loki will scrape logs from Docker containers)
+scrape_configs:
+  - job_name: "docker"
+    static_configs:
+      - targets: ['localhost']
+        labels:
+          job: "docker"
+
+    docker_sd_configs:
+      - host: "unix:///var/run/docker.sock"
+        filters:
+          - label: "com.docker.compose.project"
+        refresh_interval: 10s
